@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Rendimiento · Dashboard del paciente · GlucoVibes Clinic</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#EEF0F3}
+a{color:#2B3A67}a:hover{color:#16204A}
+button{font-family:inherit}
+.g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:span 12}
+.k{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.bm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:1100px){.s4,.s5,.s6,.s7,.s8{grid-column:span 12}.k{grid-template-columns:repeat(3,minmax(0,1fr))}.bm{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.k{grid-template-columns:repeat(2,minmax(0,1fr))}.bm{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+</head>
+<body>
+<template id="dc-template">
+<div style="box-sizing: border-box; min-height: 100vh; background: #EEF0F3; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #14151A; font-variant-numeric: tabular-nums; padding: 28px 32px 48px"><div style="max-width: 1376px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
+<header style="background: #12141C; color: #FFFFFF; border-radius: 24px; padding: 22px 26px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px">
+<div style="display: flex; align-items: center; gap: 16px">
+<div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #0E9F77, #1F8FB5); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800">IE</div>
+<div>
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #8FE3C6">Consulta de seguimiento · Programa Rendimiento deportivo</div>
+<div style="font-size: 24px; font-weight: 800; letter-spacing: -0.01em">Iker Etxeberria</div>
+<div style="font-size: 13px; color: #B9BCC9; margin-top: 2px">Paciente de ejemplo · 34 años · ciclismo de fondo · en el programa desde el 11 may 2026</div>
+</div>
+</div>
+<nav aria-label="Perfil de paciente" style="display: flex; flex-wrap: wrap; gap: 4px; background: #1E2130; padding: 4px; border-radius: 14px"><a href="index.html" style="text-decoration: none; padding: 10px 14px; border-radius: 12px; color: #C9CCD8; font-size: 13px; font-weight: 700">Longevidad</a><a href="peso.html" style="text-decoration: none; padding: 10px 14px; border-radius: 12px; color: #C9CCD8; font-size: 13px; font-weight: 700">Pérdida de peso</a><a href="rendimiento.html" aria-current="page" style="text-decoration: none; padding: 10px 14px; border-radius: 12px; background: #FFFFFF; color: #14151A; font-size: 13px; font-weight: 800">Rendimiento</a></nav>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid #262A3A; padding-top: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #8B8FA3">Simular evolución</span>
+<div role="group" aria-label="Momento del programa" style="display: flex; gap: 4px; background: #1E2130; padding: 4px; border-radius: 12px">
+<sc-for list="{{stages}}" as="s" hint-placeholder-count="4">
+<sc-if value="{{s.on}}" hint-placeholder-val="{{false}}"><button type="button" aria-pressed="true" onClick="{{s.pick}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 9px; background: #8FE3C6; color: #0B2A22; font-size: 13px; font-weight: 800; cursor: pointer">{{s.label}}</button></sc-if>
+<sc-if value="{{s.off}}" hint-placeholder-val="{{true}}"><button type="button" aria-pressed="false" onClick="{{s.pick}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 9px; background: transparent; color: #D5D8E3; font-size: 13px; font-weight: 700; cursor: pointer">{{s.label}}</button></sc-if>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #B9BCC9">Semana <strong style="color: #FFFFFF">{{week}}</strong> de 26 · hasta el <strong style="color: #FFFFFF">{{dateLabel}}</strong></span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #8B8FA3">Vista</span>
+<div role="group" aria-label="Agregación" style="display: flex; gap: 4px; background: #1E2130; padding: 4px; border-radius: 12px">
+<sc-for list="{{aggs}}" as="a" hint-placeholder-count="2">
+<sc-if value="{{a.on}}" hint-placeholder-val="{{false}}"><button type="button" aria-pressed="true" onClick="{{a.pick}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 9px; background: #FFFFFF; color: #14151A; font-size: 13px; font-weight: 800; cursor: pointer">{{a.label}}</button></sc-if>
+<sc-if value="{{a.off}}" hint-placeholder-val="{{true}}"><button type="button" aria-pressed="false" onClick="{{a.pick}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 9px; background: transparent; color: #D5D8E3; font-size: 13px; font-weight: 700; cursor: pointer">{{a.label}}</button></sc-if>
+</sc-for>
+</div>
+<span style="font-size: 11px; font-weight: 800; color: #12141C; background: #F5C76B; border-radius: 999px; padding: 5px 10px">Datos simulados</span>
+</div>
+</div>
+</header>
+
+<div class="k">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="6">
+<div style="background: #FFFFFF; border-radius: 18px; padding: 14px 16px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05)">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #5B5E6B"><span style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: {{k.color}}"></span>{{k.label}}</div>
+<div style="display: flex; align-items: baseline; gap: 4px"><span style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #14151A">{{k.value}}</span><span style="font-size: 13px; font-weight: 700; color: #5B5E6B">{{k.unit}}</span></div>
+<svg viewBox="0 0 120 36" width="100%" height="36" preserveAspectRatio="none" aria-hidden="true" style="display: block"><path d="{{k.area}}" fill="{{k.color}}" fill-opacity="0.12"></path><path d="{{k.spark}}" fill="none" stroke="{{k.color}}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg>
+<span style="align-self: flex-start; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 3px 8px; background: {{k.bg}}; color: {{k.fg}}">{{k.delta}}</span>
+</div>
+</sc-for>
+</div>
+<div class="g"><section class="s8" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Capacidad aeróbica y peso</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">VO₂máx estimado por tu reloj y peso de la báscula</div></div></div>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 28px">
+<div><div style="font-size: 56px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #B07400">{{vNow}}</div>
+<div style="font-size: 13px; color: #5B5E6B; margin-top: 4px">VO₂máx · ml/kg/min</div></div>
+<div><div style="font-size: 22px; font-weight: 800; color: #B07400">{{vDelta}}</div><div style="font-size: 12px; color: #5B5E6B">desde el inicio</div></div>
+<div><div style="font-size: 22px; font-weight: 800">{{pNow}} kg</div><div style="font-size: 12px; color: #5B5E6B">peso actual</div></div>
+<div><div style="font-size: 22px; font-weight: 800">{{vRel}}</div><div style="font-size: 12px; color: #5B5E6B">referencia para hombres de 30–39 años</div></div>
+</div>
+<sc-if value="{{isSem}}" hint-placeholder-val="{{true}}">
+<svg viewBox="0 0 860 300" width="100%" aria-hidden="true" style="display: block; overflow: visible">
+<line x1="44" x2="812" y1="272.0" y2="272.0" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="276.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">50</text><line x1="44" x2="812" y1="207.5" y2="207.5" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="211.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">53</text><line x1="44" x2="812" y1="143.0" y2="143.0" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="147.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">56</text><line x1="44" x2="812" y1="78.5" y2="78.5" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="82.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">59</text><line x1="44" x2="812" y1="14.0" y2="14.0" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="18.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">62</text>
+<text x="820" y="276.0" font-size="11" font-weight="600" fill="#1F8FB5">70</text><text x="820" y="190.0" font-size="11" font-weight="600" fill="#1F8FB5">72</text><text x="820" y="104.0" font-size="11" font-weight="600" fill="#1F8FB5">74</text><text x="820" y="18.0" font-size="11" font-weight="600" fill="#1F8FB5">76</text>
+<text x="36" y="6" text-anchor="end" font-size="11" font-weight="800" fill="#B07400">ml/kg/min</text>
+<text x="820" y="6" font-size="11" font-weight="800" fill="#1F8FB5">kg</text>
+<path d="{{pLine}}" fill="none" stroke="#1F8FB5" stroke-width="2.5" stroke-dasharray="6 5" stroke-linejoin="round"></path>
+<path d="{{vArea}}" fill="#E0A21B" fill-opacity="0.16"></path>
+<path d="{{vLine}}" fill="none" stroke="#D18A00" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"></path>
+<path d="{{vLast}}" fill="#D18A00" stroke="#FFFFFF" stroke-width="3"></path>
+<text x="58.8" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S1</text><text x="176.9" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S5</text><text x="295.1" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S9</text><text x="413.2" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S13</text><text x="531.4" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S17</text><text x="649.5" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S21</text><text x="767.7" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S25</text><text x="797.2" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S26</text>
+</svg>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; font-weight: 600; color: #5B5E6B"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 3px; border-radius: 2px; background: #D18A00"></span>VO₂máx (estimación Garmin)</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 0; border-top: 2px dashed #1F8FB5"></span>Peso (eje derecho)</span></div>
+</sc-if>
+<sc-if value="{{isMes}}" hint-placeholder-val="{{false}}">
+<svg viewBox="0 0 860 300" width="100%" aria-hidden="true" style="display: block; overflow: visible">
+<line x1="44" x2="812" y1="272.0" y2="272.0" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="276.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">50</text><line x1="44" x2="812" y1="207.5" y2="207.5" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="211.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">53</text><line x1="44" x2="812" y1="143.0" y2="143.0" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="147.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">56</text><line x1="44" x2="812" y1="78.5" y2="78.5" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="82.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">59</text><line x1="44" x2="812" y1="14.0" y2="14.0" stroke="#E9EAEE" stroke-width="1"></line><text x="36" y="18.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">62</text>
+<text x="820" y="276.0" font-size="11" font-weight="600" fill="#1F8FB5">70</text><text x="820" y="190.0" font-size="11" font-weight="600" fill="#1F8FB5">72</text><text x="820" y="104.0" font-size="11" font-weight="600" fill="#1F8FB5">74</text><text x="820" y="18.0" font-size="11" font-weight="600" fill="#1F8FB5">76</text>
+<text x="820" y="6" font-size="11" font-weight="800" fill="#1F8FB5">kg</text>
+<path d="{{moBars}}" fill="#E0A21B"></path>
+<path d="{{moP}}" fill="#1F8FB5" stroke="#FFFFFF" stroke-width="2"></path>
+<text x="108.0" y="{{mt.y0}}" text-anchor="middle" font-size="14" font-weight="800" fill="#14151A">{{mt.v0}}</text><text x="236.0" y="{{mt.y1}}" text-anchor="middle" font-size="14" font-weight="800" fill="#14151A">{{mt.v1}}</text><text x="364.0" y="{{mt.y2}}" text-anchor="middle" font-size="14" font-weight="800" fill="#14151A">{{mt.v2}}</text><text x="492.0" y="{{mt.y3}}" text-anchor="middle" font-size="14" font-weight="800" fill="#14151A">{{mt.v3}}</text><text x="620.0" y="{{mt.y4}}" text-anchor="middle" font-size="14" font-weight="800" fill="#14151A">{{mt.v4}}</text><text x="748.0" y="{{mt.y5}}" text-anchor="middle" font-size="14" font-weight="800" fill="#14151A">{{mt.v5}}</text>
+<text x="108.0" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">Mes 1</text><text x="236.0" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">Mes 2</text><text x="364.0" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">Mes 3</text><text x="492.0" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">Mes 4</text><text x="620.0" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">Mes 5</text><text x="748.0" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">Mes 6</text>
+</svg>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; font-weight: 600; color: #5B5E6B"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #E0A21B"></span>VO₂máx medio del mes</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 9px; height: 9px; border-radius: 50%; background: #1F8FB5"></span>Peso medio (eje derecho, 70–76 kg)</span></div>
+</sc-if>
+</section><div class="s4" style="display: flex; flex-direction: column; gap: 16px; min-width: 0"><section class="" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Readiness de hoy</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">Calculado al despertar con tu noche, VFC y glucosa nocturna</div></div></div>
+<div style="display: flex; align-items: center; gap: 18px">
+<div style="position: relative; width: 128px; height: 128px; flex-shrink: 0">
+<svg viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Readiness de hoy">
+<circle cx="64" cy="64" r="52" fill="none" stroke="#FDEBDD" stroke-width="14"></circle>
+<circle cx="64" cy="64" r="52" fill="none" stroke="#F07A2B" stroke-width="14" stroke-linecap="round" stroke-dasharray="{{rdRing}}" transform="rotate(-90 64 64)"></circle>
+</svg>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center">
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.4C1.6 8 3.6 4.5 7 4.5c2 0 3.6 1.1 5 2.9 1.4-1.8 3-2.9 5-2.9 3.4 0 5.4 3.5 4.3 6.6-1.8 4.8-9.3 9.4-9.3 9.4z" fill="#F07A2B"></path></svg>
+<span style="font-size: 32px; font-weight: 800; line-height: 1">{{rdNow}}</span><span style="font-size: 11px; font-weight: 700; color: #5B5E6B">%</span>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<span style="align-self: flex-start; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 4px 9px; background: {{rdBg}}; color: {{rdFg}}">{{rdTag}}</span>
+<div style="font-size: 16px; font-weight: 800">{{rdTitle}}</div>
+<div style="font-size: 13px; color: #5B5E6B; line-height: 1.45">{{rdText}}</div>
+</div></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="background: #F6F7F9; border-radius: 12px; padding: 10px"><div style="font-size: 11px; font-weight: 700; color: #5B5E6B">VFC nocturna</div><div style="font-size: 20px; font-weight: 800">{{hrv}} <span style="font-size: 11px; color: #5B5E6B">ms</span></div></div>
+<div style="background: #F6F7F9; border-radius: 12px; padding: 10px"><div style="font-size: 11px; font-weight: 700; color: #5B5E6B">FC en reposo</div><div style="font-size: 20px; font-weight: 800">{{rhr}} <span style="font-size: 11px; color: #5B5E6B">ppm</span></div></div>
+<div style="background: #F6F7F9; border-radius: 12px; padding: 10px"><div style="font-size: 11px; font-weight: 700; color: #5B5E6B">MAG nocturno</div><div style="font-size: 20px; font-weight: 800">{{magN}}</div></div>
+</div>
+</section><section class="" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Salud metabólica</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">Media semanal (0–100)</div></div></div>
+<div style="display: flex; align-items: baseline; gap: 8px"><span style="font-size: 34px; font-weight: 800; color: #0B6B4F">{{metNow}}</span><span style="font-size: 13px; color: #5B5E6B">ahora · {{metSt}} al empezar</span></div>
+<svg viewBox="0 0 400 80" width="100%" aria-hidden="true" style="display: block"><path d="{{mArea}}" fill="#0E9F77" fill-opacity="0.16"></path><path d="{{mLine}}" fill="none" stroke="#0E9F77" stroke-width="3" stroke-linejoin="round"></path></svg>
+</section></div><section class="s5" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Glucosa durante el entrenamiento</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">% del tiempo de cada semana de sesiones en 70–180 mg/dL</div></div><span style="font-size: 12px; font-weight: 800; border-radius: 999px; padding: 5px 10px; background: {{tirBg}}; color: {{tirFg}}">{{tirChip}}</span></div>
+<svg viewBox="0 0 520 210" width="100%" aria-hidden="true" style="display: block; overflow: visible">
+<line x1="36" x2="512" y1="186.0" y2="186.0" stroke="#E9EAEE" stroke-width="1"></line><text x="28" y="190.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">0%</text><line x1="36" x2="512" y1="142.5" y2="142.5" stroke="#E9EAEE" stroke-width="1"></line><text x="28" y="146.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">25%</text><line x1="36" x2="512" y1="99.0" y2="99.0" stroke="#E9EAEE" stroke-width="1"></line><text x="28" y="103.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">50%</text><line x1="36" x2="512" y1="55.5" y2="55.5" stroke="#E9EAEE" stroke-width="1"></line><text x="28" y="59.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">75%</text><line x1="36" x2="512" y1="12.0" y2="12.0" stroke="#E9EAEE" stroke-width="1"></line><text x="28" y="16.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">100%</text>
+<path d="{{tBars}}" fill="#2FA36B"></path>
+<path d="{{hLine}}" fill="none" stroke="#D9423A" stroke-width="2.5" stroke-linejoin="round"></path>
+<path d="{{hDots}}" fill="#D9423A"></path>
+<text x="45.2" y="206" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S1</text><text x="136.7" y="206" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S6</text><text x="228.2" y="206" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S11</text><text x="319.8" y="206" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S16</text><text x="411.3" y="206" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S21</text><text x="502.8" y="206" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">S26</text>
+</svg>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; font-weight: 600; color: #5B5E6B"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #2FA36B"></span>Tiempo en rango 70–180</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 3px; border-radius: 2px; background: #D9423A"></span>Tiempo &lt; 70 mg/dL</span></div>
+<div style="font-size: 13px; color: #5B5E6B; background: #F6F7F9; border-radius: 12px; padding: 10px 12px">{{tirText}}</div>
+</section><section class="s7" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Tu salida larga del sábado</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">Glucosa (sensor) durante 4 h de rodaje · semana 1 frente a la semana actual</div></div></div>
+<svg viewBox="0 0 750 260" width="100%" aria-hidden="true" style="display: block; overflow: visible">
+<rect x="40" y="64.2" width="702" height="140.2" fill="#E7F6EF"></rect>
+<text x="32" y="234.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">50</text><text x="32" y="208.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">70</text><text x="32" y="170.2" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">100</text><text x="32" y="119.2" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">140</text><text x="32" y="68.2" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">180</text><text x="32" y="30.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">210</text>
+<path d="{{sBefore}}" fill="none" stroke="#9AA0AE" stroke-width="2.5" stroke-dasharray="6 5" stroke-linejoin="round"></path>
+<path d="{{sNow}}" fill="none" stroke="#D9423A" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"></path>
+<path d="{{fuel}}" fill="#E0A21B" stroke="#FFFFFF" stroke-width="2"></path>
+<text x="157.0" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#B07400">gel / barrita</text>
+<text x="40.0" y="254" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">0 h</text><text x="215.5" y="254" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">1 h</text><text x="391.0" y="254" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">2 h</text><text x="566.5" y="254" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">3 h</text><text x="742.0" y="254" text-anchor="middle" font-size="11" font-weight="600" fill="#5B5E6B">4 h</text>
+</svg>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; font-weight: 600; color: #5B5E6B"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 0; border-top: 2px dashed #9AA0AE"></span>Semana 1</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 3px; border-radius: 2px; background: #D9423A"></span>Semana actual</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 9px; height: 9px; border-radius: 50%; background: #E0A21B"></span>Toma de hidratos</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #E7F6EF"></span>70–180 mg/dL</span></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="background: #F6F7F9; border-radius: 12px; padding: 10px"><div style="font-size: 11px; font-weight: 700; color: #5B5E6B">Mínimo en la salida</div><div style="font-size: 20px; font-weight: 800">{{sMin}} <span style="font-size: 11px; color: #5B5E6B">mg/dL</span></div></div>
+<div style="background: #F6F7F9; border-radius: 12px; padding: 10px"><div style="font-size: 11px; font-weight: 700; color: #5B5E6B">Máximo</div><div style="font-size: 20px; font-weight: 800">{{sMax}} <span style="font-size: 11px; color: #5B5E6B">mg/dL</span></div></div>
+<div style="background: #F6F7F9; border-radius: 12px; padding: 10px"><div style="font-size: 11px; font-weight: 700; color: #5B5E6B">En rango</div><div style="font-size: 20px; font-weight: 800">{{sTir}} %</div></div>
+</div>
+</section><section class="s8" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Carga de entrenamiento y readiness</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">Últimas 6 semanas · las barras son la carga de cada día y la línea el readiness de la mañana siguiente</div></div></div>
+<svg viewBox="0 0 860 230" width="100%" aria-hidden="true" style="display: block; overflow: visible">
+<line x1="40" x2="812" y1="206.0" y2="206.0" stroke="#E9EAEE" stroke-width="1"></line><text x="32" y="210.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">0%</text><line x1="40" x2="812" y1="157.5" y2="157.5" stroke="#E9EAEE" stroke-width="1"></line><text x="32" y="161.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">25%</text><line x1="40" x2="812" y1="109.0" y2="109.0" stroke="#E9EAEE" stroke-width="1"></line><text x="32" y="113.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">50%</text><line x1="40" x2="812" y1="60.5" y2="60.5" stroke="#E9EAEE" stroke-width="1"></line><text x="32" y="64.5" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">75%</text><line x1="40" x2="812" y1="12.0" y2="12.0" stroke="#E9EAEE" stroke-width="1"></line><text x="32" y="16.0" text-anchor="end" font-size="11" font-weight="600" fill="#5B5E6B">100%</text>
+<text x="820" y="210.0" font-size="11" font-weight="600" fill="#6B7280">0</text><text x="820" y="161.5" font-size="11" font-weight="600" fill="#6B7280">50</text><text x="820" y="113.0" font-size="11" font-weight="600" fill="#6B7280">100</text><text x="820" y="64.5" font-size="11" font-weight="600" fill="#6B7280">150</text><text x="820" y="16.0" font-size="11" font-weight="600" fill="#6B7280">200</text>
+<path d="{{lEasy}}" fill="#D7DBE3"></path>
+<path d="{{lHard}}" fill="#9AA3B5"></path>
+<path d="{{lRd}}" fill="none" stroke="#F07A2B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></path>
+<path d="{{lRdDots}}" fill="#F07A2B"></path>
+<path d="{{lWeeks}}" stroke="#ECEDF1" stroke-width="1"></path>
+</svg>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; font-weight: 600; color: #5B5E6B"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #D7DBE3"></span>Sesión suave o descanso</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #9AA3B5"></span>Sesión dura (carga &gt; 90)</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 3px; border-radius: 2px; background: #F07A2B"></span>Readiness (eje izquierdo)</span></div>
+<div style="font-size: 13px; color: #5B5E6B; background: #F6F7F9; border-radius: 12px; padding: 10px 12px">{{loadText}}</div>
+</section><section class="s4" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Recuperación metabólica</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">Cómo responde tu glucosa nocturna al entrenamiento · últimas 6 semanas</div></div></div>
+<svg viewBox="0 0 400 180" width="100%" aria-hidden="true" style="display: block; overflow: visible">
+<line x1="0" x2="400" y1="60.0" y2="60.0" stroke="#0B6B4F" stroke-width="1.2" stroke-dasharray="5 5"></line>
+<text x="2" y="54.0" font-size="11" font-weight="700" fill="#0B6B4F">estable &lt; 12</text>
+<path d="{{rcBars}}" fill="#4B4FD1"></path>
+<text x="115" y="{{rcY1}}" text-anchor="middle" font-size="16" font-weight="800" fill="#14151A">{{rcV1}}</text>
+<text x="305" y="{{rcY2}}" text-anchor="middle" font-size="16" font-weight="800" fill="#14151A">{{rcV2}}</text>
+<text x="115" y="172" text-anchor="middle" font-size="12" font-weight="700" fill="#5B5E6B">Tras días suaves</text>
+<text x="305" y="172" text-anchor="middle" font-size="12" font-weight="700" fill="#5B5E6B">Tras días duros</text>
+</svg>
+<div style="font-size: 12px; color: #5B5E6B">MAG nocturno medio (mg/dL/h)</div>
+<div style="display: flex; align-items: center; gap: 12px; background: #F6F7F9; border-radius: 12px; padding: 12px">
+<span style="font-size: 28px; font-weight: 800; color: #C2410C">{{rcHypo}}</span>
+<span style="font-size: 13px; color: #5B5E6B; line-height: 1.4">noches con hipoglucemia tras sesiones duras en este periodo · {{rcHypoSt}} en las 6 primeras semanas</span>
+</div>
+</section><section class="s12" style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(20,21,26,0.05), 0 10px 30px rgba(20,21,26,0.05); display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px"><div><h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #14151A">Acuerdos de esta consulta</h3><div style="font-size: 12px; color: #5B5E6B; margin-top: 3px">Lo que hemos decidido hoy juntos · se envía a tu app al terminar la consulta</div></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px"><div style="display: flex; gap: 12px; align-items: flex-start; background: #F6F7F9; border-radius: 14px; padding: 14px"><span style="width: 26px; height: 26px; border-radius: 8px; background: #12141C; color: #8FE3C6; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">1</span><div style="min-width: 0"><div style="font-size: 14px; font-weight: 800">Series solo con readiness en verde</div><div style="font-size: 12px; color: #5B5E6B; margin-top: 2px">Dos días por semana; con ámbar, rodaje en zona 2</div></div></div><div style="display: flex; gap: 12px; align-items: flex-start; background: #F6F7F9; border-radius: 14px; padding: 14px"><span style="width: 26px; height: 26px; border-radius: 8px; background: #12141C; color: #8FE3C6; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">2</span><div style="min-width: 0"><div style="font-size: 14px; font-weight: 800">Hidratos cada 40 min en salidas de más de 2 h</div><div style="font-size: 12px; color: #5B5E6B; margin-top: 2px">Es lo que ha eliminado las bajadas por debajo de 70</div></div></div><div style="display: flex; gap: 12px; align-items: flex-start; background: #F6F7F9; border-radius: 14px; padding: 14px"><span style="width: 26px; height: 26px; border-radius: 8px; background: #12141C; color: #8FE3C6; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">3</span><div style="min-width: 0"><div style="font-size: 14px; font-weight: 800">Cena con hidratos tras sesiones duras</div><div style="font-size: 12px; color: #5B5E6B; margin-top: 2px">Para evitar hipoglucemias nocturnas y llegar recuperado</div></div></div></div><div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: #5B5E6B; border-top: 1px solid #ECEDF1; padding-top: 12px"><span>Próxima revisión de VO₂máx y peso: en 8 semanas · Próxima analítica: [fecha]</span><span>[Profesional] · [Nombre de la clínica]</span></div></section></div></div></div>
+</template>
+<div id="dc-root"></div>
+<script type="text/plain" id="dc-logic" data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  renderVals() {
+
+    const fx = (n) => String(Math.round(n * 10) / 10);
+    const es = (n, d) => n.toFixed(d).replace('.', ',');
+    const R = (s) => { let x = s; return () => (x = x * 16807 % 2147483647) / 2147483647; };
+    const nz = (r) => (r() + r() + r() + r() - 2) / 0.58;
+    const ease = (t, k) => 1 - Math.pow(1 - t, k);
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const gen = (n, a, b, amp, seed, k) => { const r = R(seed); return Array.from({ length: n }, (_, i) => a + (b - a) * ease(i / (n - 1), k) + nz(r) * amp); };
+    const avg = (a) => { const b = a.filter((v) => v != null); return b.length ? b.reduce((s, v) => s + v, 0) / b.length : null; };
+    const wk = (a) => { const o = []; for (let i = 0; i < a.length; i += 7) o.push(avg(a.slice(i, i + 7))); return o; };
+    const mo = (a) => { const o = []; for (let m = 0; m < 6; m++) { const s = a.slice(Math.round(m * 30.4), Math.round((m + 1) * 30.4)); if (s.length) o.push(avg(s)); } return o; };
+    const sx = (n, L, Rr) => (i) => L + (i + 0.5) * (Rr - L) / n;
+    const sy = (min, max, T, B) => (v) => B - (clamp(v, min, max) - min) / (max - min) * (B - T);
+    const line = (vals, X, Y) => { let d = '', pen = false; vals.forEach((v, i) => { if (v == null) { pen = false; return; } d += (pen ? 'L' : 'M') + fx(X(i)) + ',' + fx(Y(v)); pen = true; }); return d; };
+    const area = (vals, X, Y, base) => { const p = []; vals.forEach((v, i) => { if (v != null) p.push([X(i), Y(v)]); }); if (p.length < 2) return ''; return 'M' + p.map((q) => fx(q[0]) + ',' + fx(q[1])).join('L') + 'L' + fx(p[p.length - 1][0]) + ',' + base + 'L' + fx(p[0][0]) + ',' + base + 'Z'; };
+    const rbar = (x, y, w, b, r) => { const h = b - y; if (h <= 0.5) return ''; r = Math.min(r, w / 2, h); return 'M' + fx(x) + ',' + fx(b) + 'V' + fx(y + r) + 'Q' + fx(x) + ',' + fx(y) + ' ' + fx(x + r) + ',' + fx(y) + 'H' + fx(x + w - r) + 'Q' + fx(x + w) + ',' + fx(y) + ' ' + fx(x + w) + ',' + fx(y + r) + 'V' + fx(b) + 'Z'; };
+    const bars = (vals, X, Y, base, w, r) => vals.map((v, i) => (v == null ? '' : rbar(X(i) - w / 2, Y(v), w, base, r))).join('');
+    const circ = (cx, cy, r) => 'M' + fx(cx - r) + ',' + fx(cy) + 'a' + r + ',' + r + ' 0 1,0 ' + 2 * r + ',0a' + r + ',' + r + ' 0 1,0 ' + -2 * r + ',0';
+    const dots = (vals, X, Y, r) => vals.map((v, i) => (v == null ? '' : circ(X(i), Y(v), r))).join('');
+    const ring = (pct, r) => { const C = 2 * Math.PI * r; return fx(C * clamp(pct, 0, 1)) + ' ' + fx(C); };
+    const chip = (good) => (good ? ['#E3F4EC', '#0B6B4F'] : ['#FDEFE0', '#8A4B00']);
+    const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    const START = Date.UTC(2026, 4, 11);
+    const dlabel = (d) => { const t = new Date(START + d * 864e5); return t.getUTCDate() + ' ' + MES[t.getUTCMonth()]; };
+    const sparkOf = (full, W) => { const v = full.filter((x) => x != null); const mn = Math.min(...v), mx = Math.max(...v); const pad = (mx - mn) * 0.12 + 1e-6; const X = sx(full.length, 0, 120), Y = sy(mn - pad, mx + pad, 3, 33); const vis = full.slice(0, W); return { spark: line(vis, X, Y), area: area(vis, X, Y, 36) }; };
+    const kpi = (label, value, unit, color, delta, good, full, W) => { const c = chip(good); const s = sparkOf(full, W); return { label, value, unit, color, delta, bg: c[0], fg: c[1], spark: s.spark, area: s.area }; };
+    const sgn = (v, d) => { const r = Math.round(v * Math.pow(10, d)) / Math.pow(10, d); return (r > 0 ? '+' : r < 0 ? '−' : '±') + es(Math.abs(r), d); };
+    const st = this.state || {};
+    const stage = st.stage || 'm6';
+    const agg = st.agg || 'sem';
+    const STAGES = [['s2', 'Semana 2', 2], ['m1', 'Mes 1', 4], ['m3', 'Mes 3', 13], ['m6', 'Mes 6', 26]];
+    const W = STAGES.find((s) => s[0] === stage)[2];
+    const D = W * 7;
+    const MV = Math.max(1, Math.round(W / 4.33));
+    const stages = STAGES.map((s) => ({ label: s[1], on: s[0] === stage, off: s[0] !== stage, pick: () => this.setState({ stage: s[0], agg }) }));
+    const aggs = [['sem', 'Semanal'], ['mes', 'Mensual']].map((a) => ({ label: a[1], on: a[0] === agg, off: a[0] !== agg, pick: () => this.setState({ stage, agg: a[0] }) }));
+    const common = { stages, aggs, week: W, dateLabel: dlabel(D - 1), isSem: agg === 'sem', isMes: agg === 'mes' };
+
+    const N = 182;
+    const vo2 = gen(N, 54.0, 59.4, 0.18, 201, 1.5);
+    const kg = gen(N, 74.6, 71.8, 0.28, 211, 1.6);
+    const PAT = [0, 95, 45, 80, 20, 140, 70];
+    const rl = R(221);
+    const loadD = Array.from({ length: N }, (_, i) => { const w = Math.floor(i / 7); const prog = 0.8 + 0.35 * (w / 25); const deload = w % 4 === 3 ? 0.6 : 1; return Math.max(0, PAT[i % 7] * prog * deload + nz(rl) * 6); });
+    const rr = R(231);
+    const rdy = Array.from({ length: N }, (_, i) => clamp(62 + 17 * ease(i / (N - 1), 1.5) - 0.11 * (i ? loadD[i - 1] : 0) + 6 + nz(rr) * 4.5, 25, 98));
+    const hrvD = Array.from({ length: N }, (_, i) => 62 + 9 * ease(i / (N - 1), 1.5) - 0.04 * (i ? loadD[i - 1] : 0) + nz(rr) * 3);
+    const rhrD = gen(N, 49, 45, 1, 241, 1.5);
+    const met = gen(N, 66, 84, 2.8, 251, 1.7).map((v) => clamp(v, 0, 100));
+    const tirW = gen(26, 61, 89, 3, 261, 1.6).map((v) => clamp(v, 0, 100));
+    const lowW = gen(26, 9, 1.8, 0.8, 271, 1.6).map((v) => clamp(v, 0, 100));
+    const magN = Array.from({ length: N }, (_, i) => 13.5 - 3.2 * ease(i / (N - 1), 1.6) + 0.018 * (i ? loadD[i - 1] : 0) + nz(rr) * 1.1);
+    const rh = R(281);
+    const hypoN = Array.from({ length: N }, (_, i) => ((i ? loadD[i - 1] : 0) > 90 && rh() < 0.42 - 0.34 * ease(i / (N - 1), 1.5) ? 1 : 0));
+    const last7 = (a) => avg(a.slice(Math.max(0, D - 7), D));
+    const first7 = (a) => avg(a.slice(0, 7));
+
+    // hero
+    const X26 = sx(26, 44, 812), YV = sy(50, 62, 14, 272), YP = sy(70, 76, 14, 272);
+    const wV = wk(vo2).slice(0, W), wP = wk(kg).slice(0, W);
+    const vNow = last7(vo2), vSt = first7(vo2);
+    const X6 = sx(6, 44, 812);
+    const mV = mo(vo2.slice(0, D)).slice(0, MV), mP = mo(kg.slice(0, D)).slice(0, MV);
+    const mt = {};
+    for (let i = 0; i < 6; i++) { mt['v' + i] = i < mV.length ? es(mV[i], 1) : ''; mt['y' + i] = i < mV.length ? fx(YV(mV[i]) - 8) : 0; }
+    const vRel = vNow >= 51 ? (vNow >= 56 ? 'Superior' : 'Excelente') : 'Bueno';
+
+    // readiness
+    const rdNow = Math.round(rdy[D - 1]);
+    const rdTag = rdNow >= 75 ? 'Verde' : rdNow >= 55 ? 'Ámbar' : 'Rojo';
+    const rdc = rdNow >= 75 ? ['#E3F4EC', '#0B6B4F'] : rdNow >= 55 ? ['#FDF0DC', '#8A4B00'] : ['#FBE3E0', '#9A2A1E'];
+    const rdTitle = rdNow >= 75 ? 'Día apto para series de alta intensidad' : rdNow >= 55 ? 'Rodaje en zona 2, sin series' : 'Descanso activo o movilidad';
+    const rdText = rdNow >= 75 ? 'Recuperación completa: VFC por encima de tu media y noche metabólicamente estable.' : rdNow >= 55 ? 'Recuperación parcial tras la carga de ayer. Mantén la intensidad baja.' : 'Tu cuerpo aún asimila la carga. Prioriza sueño e hidratos de calidad.';
+
+    // TIR
+    const XT = sx(26, 36, 512), YT = sy(0, 100, 12, 186);
+    const tv = tirW.slice(0, W), lv = lowW.slice(0, W);
+
+    // session: before (week 1) and target, interpolated with progress
+    const MIN = Array.from({ length: 25 }, (_, i) => i * 10);
+    const BEF = [96, 112, 124, 118, 104, 92, 84, 78, 72, 67, 64, 66, 118, 172, 190, 168, 132, 104, 88, 76, 69, 65, 71, 92, 101];
+    const TGT = [94, 108, 120, 124, 118, 126, 122, 117, 124, 120, 116, 122, 128, 124, 118, 126, 121, 116, 123, 119, 114, 120, 117, 112, 108];
+    const prog = ease(Math.max(0, W - 1) / 25, 1.4);
+    const SNOW = BEF.map((b, i) => b + (TGT[i] - b) * prog);
+    const gx = (m) => 40 + m / 240 * 702, gy = sy(50, 210, 26, 230);
+    const spath = (a) => 'M' + a.map((v, i) => fx(gx(MIN[i])) + ',' + fx(gy(v))).join('L');
+    const nFuel = prog < 0.25 ? 1 : prog < 0.6 ? 3 : 5;
+    const FUEL = [120, 40, 80, 160, 200].slice(0, nFuel);
+    const fuel = FUEL.map((m) => circ(gx(m), 14 + 6, 6)).join('');
+
+    // load vs readiness (last 42 days)
+    const s0 = Math.max(0, D - 42), n = D - s0;
+    const XL = sx(42, 40, 812), YL = sy(0, 200, 12, 206), YR = sy(0, 100, 12, 206);
+    const ld = loadD.slice(s0, D), rd = rdy.slice(s0, D);
+    const lEasy = bars(ld.map((v) => (v <= 90 ? v : null)), XL, YL, 206, 12, 3), lHard = bars(ld.map((v) => (v > 90 ? v : null)), XL, YL, 206, 12, 3);
+    let lWeeks = ''; for (let j = 7; j < 42; j += 7) lWeeks += 'M' + fx(40 + j * (772 / 42)) + ',12V206';
+    const afterHard = rd.filter((v, j) => j > 0 && ld[j - 1] > 90), afterEasy = rd.filter((v, j) => j > 0 && ld[j - 1] <= 90);
+
+    // recovery
+    const idx = Array.from({ length: n }, (_, j) => s0 + j).filter((i) => i > 0);
+    const mh = avg(idx.filter((i) => loadD[i - 1] > 90).map((i) => magN[i])), me = avg(idx.filter((i) => loadD[i - 1] <= 90).map((i) => magN[i]));
+    const ryy = (v) => 150 - v / 16 * 120;
+    const rcBars = rbar(70, ryy(me), 90, 150, 10) + rbar(260, ryy(mh), 90, 150, 10);
+    const hyC = idx.filter((i) => hypoN[i]).length, hySt = hypoN.slice(0, Math.min(42, D)).filter((v) => v).length;
+
+    const XM = sx(26, 0, 400), YM = sy(55, 92, 4, 78);
+    const wM = wk(met).slice(0, W);
+    const kpis = [
+      kpi('VO₂máx', es(vNow, 1), 'ml/kg/min', '#D18A00', sgn(vNow - vSt, 1) + ' desde el inicio', vNow >= vSt, wk(vo2), W),
+      kpi('Peso', es(last7(kg), 1), 'kg', '#1F8FB5', sgn(last7(kg) - first7(kg), 1) + ' kg desde el inicio', true, wk(kg), W),
+      kpi('Glucosa en rango al entrenar', Math.round(tv[tv.length - 1]), '%', '#2FA36B', sgn(tv[tv.length - 1] - tirW[0], 0) + ' pts desde el inicio', tv[tv.length - 1] >= tirW[0], tirW, W),
+      kpi('Readiness', Math.round(last7(rdy)), '%', '#F07A2B', sgn(last7(rdy) - first7(rdy), 0) + ' pts desde el inicio', last7(rdy) >= first7(rdy), wk(rdy), W),
+      kpi('VFC nocturna', Math.round(last7(hrvD)), 'ms', '#4B4FD1', sgn(last7(hrvD) - first7(hrvD), 0) + ' ms desde el inicio', last7(hrvD) >= first7(hrvD), wk(hrvD), W),
+      kpi('Salud metabólica', Math.round(last7(met)), '/100', '#0E9F77', sgn(last7(met) - first7(met), 0) + ' pts desde el inicio', last7(met) >= first7(met), wk(met), W),
+    ];
+    const tc = chip(tv[tv.length - 1] >= 80);
+    return Object.assign(common, {
+      kpis,
+      vNow: es(vNow, 1), vDelta: sgn(vNow - vSt, 1), pNow: es(last7(kg), 1), vRel,
+      vLine: line(wV, X26, YV), vArea: area(wV, X26, YV, 272), vLast: circ(X26(wV.length - 1), YV(wV[wV.length - 1]), 7), pLine: line(wP, X26, YP),
+      moBars: bars(mV, X6, YV, 272, 84, 10), moP: mP.map((v, i) => circ(X6(i), YP(v), 7)).join(''), mt,
+      rdNow, rdRing: ring(rdNow / 100, 52), rdTag, rdBg: rdc[0], rdFg: rdc[1], rdTitle, rdText,
+      hrv: Math.round(hrvD[D - 1]), rhr: Math.round(rhrD[D - 1]), magN: es(magN[D - 1], 1),
+      metNow: Math.round(last7(met)), metSt: Math.round(first7(met)), mLine: line(wM, XM, YM), mArea: area(wM, XM, YM, 80),
+      tBars: bars(tv, XT, YT, 186, 12, 4), hLine: line(lv, XT, YT), hDots: dots(lv, XT, YT, 3),
+      tirChip: Math.round(tv[tv.length - 1]) + ' % esta semana', tirBg: tc[0], tirFg: tc[1],
+      tirText: 'Has pasado de ' + Math.round(tirW[0]) + ' % a ' + Math.round(tv[tv.length - 1]) + ' % del tiempo en rango entrenando, con menos bajadas por debajo de 70.',
+      sBefore: spath(BEF), sNow: spath(SNOW), fuel,
+      sMin: Math.round(Math.min(...SNOW)), sMax: Math.round(Math.max(...SNOW)), sTir: Math.round(SNOW.filter((v) => v >= 70 && v <= 180).length / SNOW.length * 100),
+      lEasy, lHard, lRd: line(rd, XL, YR), lRdDots: dots(rd, XL, YR, 2.6), lWeeks,
+      loadText: afterHard.length && afterEasy.length ? 'Tras una sesión dura tu readiness medio es ' + Math.round(avg(afterHard)) + ' %; tras días suaves, ' + Math.round(avg(afterEasy)) + ' %. Vuelves a verde en ' + (avg(afterHard) > 62 ? '1 día' : '2 días') + ' de media.' : 'Aún no hay suficientes sesiones para comparar.',
+      rcBars, rcV1: me == null ? '' : es(me, 1), rcV2: mh == null ? '' : es(mh, 1), rcY1: fx(ryy(me || 0) - 8), rcY2: fx(ryy(mh || 0) - 8),
+      rcHypo: hyC, rcHypoSt: hySt,
+    });
+
+  }
+}
+</script>
+
+<script>
+(function () {
+  class DCLogic {
+    constructor(props) { this.props = props; this.state = {}; }
+    setState(patch) { this.state = Object.assign({}, this.state, patch); render(); }
+    forceUpdate() { render(); }
+  }
+  const sc = document.getElementById('dc-logic');
+  const meta = JSON.parse(sc.getAttribute('data-props') || '{}');
+  const props = {};
+  for (const k in meta) if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k].default;
+  const Component = new Function('DCLogic', sc.textContent + '; return Component;')(DCLogic);
+  const comp = new Component(props);
+  const TEMPLATE = document.getElementById('dc-template').innerHTML;
+  const root = document.getElementById('dc-root');
+  const look = (p, s) => { p = p.trim(); if (p === 'true') return true; if (p === 'false') return false; return p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), s); };
+  const sub = (str, s) => str.replace(/\{\{\s*([\w.$]+)\s*\}\}/g, (_, p) => { const v = look(p, s); return v == null ? '' : String(v); });
+  const whole = (str, s) => { const m = /^\s*\{\{\s*([\w.$]+)\s*\}\}\s*$/.exec(str || ''); return m ? look(m[1], s) : undefined; };
+  function walk(node, s) {
+    for (const ch of Array.from(node.childNodes)) {
+      if (ch.nodeType === 3) { if (ch.nodeValue.includes('{{')) ch.nodeValue = sub(ch.nodeValue, s); continue; }
+      if (ch.nodeType !== 1) continue;
+      const tag = ch.tagName.toLowerCase();
+      if (tag === 'sc-for') {
+        const list = whole(ch.getAttribute('list'), s) || [];
+        const as = ch.getAttribute('as');
+        const frag = document.createDocumentFragment();
+        list.forEach((item, i) => {
+          const box = document.createElement('div');
+          for (const c of Array.from(ch.childNodes)) box.appendChild(c.cloneNode(true));
+          walk(box, Object.assign({}, s, { [as]: item, $index: i }));
+          while (box.firstChild) frag.appendChild(box.firstChild);
+        });
+        ch.replaceWith(frag); continue;
+      }
+      if (tag === 'sc-if') {
+        if (whole(ch.getAttribute('value'), s)) { walk(ch, s); ch.replaceWith(...Array.from(ch.childNodes)); } else ch.remove();
+        continue;
+      }
+      for (const a of Array.from(ch.attributes)) {
+        const m = /^on([a-z]+)$/i.exec(a.name);
+        if (m) { const fn = whole(a.value, s); ch.removeAttribute(a.name); if (typeof fn === 'function') ch.addEventListener(m[1].toLowerCase(), fn); continue; }
+        if (a.value.includes('{{')) ch.setAttribute(a.name, sub(a.value, s));
+      }
+      walk(ch, s);
+    }
+  }
+  function render() {
+    const vals = comp.renderVals();
+    const y = window.scrollY;
+    const tpl = document.createElement('template');
+    tpl.innerHTML = TEMPLATE;
+    const frag = tpl.content;
+    const box = document.createElement('div');
+    box.appendChild(frag);
+    walk(box, vals);
+    root.replaceChildren(...Array.from(box.childNodes));
+    window.scrollTo(0, y);
+  }
+  render();
+})();
+</script>
+
+</body>
+</html>
